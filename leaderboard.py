@@ -94,7 +94,7 @@ class Leaderboard:
         self.playerCount = int(playerCount)
         self.players: List[Player] = list(players) if players else []
 
-    def _find_index(self, name: str) -> int:
+    def find_index(self, name: str) -> int:
         for i, p in enumerate(self.players):
             if p.name == name:
                 return i
@@ -112,13 +112,13 @@ class Leaderboard:
 
     def remove_player(self, name: str) -> None:
         """Remove a player by name. Raises KeyError if not found."""
-        idx = self._find_index(name)
+        idx = self.find_index(name)
         if idx == -1:
             raise KeyError(f"player '{name}' not found")
         self.players.pop(idx)
 
     def get_player(self, name: str) -> Optional[Player]:
-        idx = self._find_index(name)
+        idx = self.find_index(name)
         return self.players[idx] if idx != -1 else None
 
     def record_match(self, winner: str, loser: str) -> None:
@@ -157,7 +157,4 @@ class Leaderboard:
         return cls(name=d.get("name", ""), playerCount=d.get("playerCount", len(players)), players=players)
 
     def __repr__(self) -> str:
-        return f"Leaderboard(name={self.name!r}, players={len(self.players)})"
-
-
-        
+        return f"Leaderboard(name={self.name!r}, players={len(self.players)})"      
