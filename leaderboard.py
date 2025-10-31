@@ -43,14 +43,17 @@ class Player:
 
     @property
     def wins(self) -> int:
+        """Get total wins of this player."""
         return self.winRecord
 
     @property
     def losses(self) -> int:
+        """Get total losses of this player."""
         return self.lossRecord
 
     @property
     def total_games(self) -> int:
+        """Get total games of this player."""
         return self.winRecord + self.lossRecord
 
     @property
@@ -69,7 +72,7 @@ class Player:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Player":
-        return cls(d.get("name"), d.get("winRecord", 0), d.get("lossRecord", 0))
+        return cls(d.get("name"), d.get("winRecord", 0), d.get("lossRecord", 0)) # type: ignore
 
     def __repr__(self) -> str:
         return f"Player(name={self.name!r}, wins={self.winRecord}, losses={self.lossRecord}, win_rate={self.win_rate:.3f})"
