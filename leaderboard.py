@@ -17,7 +17,7 @@ Usage example:
 """
 
 from typing import List, Optional
-
+from elo import Elo  # import the Elo class
 
 class Player:
     """Represents a player with a win/loss record.
@@ -28,10 +28,11 @@ class Player:
     - lossRecord (int)
     """
 
-    def __init__(self, name: str, winRecord: int = 0, lossRecord: int = 0):
+    def __init__(self, name: str, winRecord: int = 0, lossRecord: int = 0, rating: float = 1500):
         self.name = str(name)
         self.winRecord = int(winRecord)
         self.lossRecord = int(lossRecord)
+        self.rating = float(rating) #elo rating
 
     def record_win(self, count: int = 1) -> None:
         """Add wins to this player's record."""
@@ -68,11 +69,11 @@ class Player:
         return self.winRecord / total
 
     def to_dict(self) -> dict:
-        return {"name": self.name, "winRecord": self.winRecord, "lossRecord": self.lossRecord}
+        return {"name": self.name, "winRecord": self.winRecord, "lossRecord": self.lossRecord, "rating": self.rating}
 
     @classmethod
     def from_dict(cls, d: dict) -> "Player":
-        return cls(d.get("name"), d.get("winRecord", 0), d.get("lossRecord", 0)) # type: ignore
+        return cls(d.get("name"), d.get("winRecord", 0), d.get("lossRecord", 0), d.get("rating", 1500)) # type: ignore
 
     def __repr__(self) -> str:
         return f"Player(name={self.name!r}, wins={self.winRecord}, losses={self.lossRecord}, win_rate={self.win_rate:.3f})"
@@ -88,11 +89,12 @@ class Leaderboard:
     4. Alphabetical by name
     """
 
-    def __init__(self, name: str, playerCount: int = 0, players: Optional[List[Player]] = None):
+    def __init__(self, name: str, playerCount: int = 0, players: Optional[List[Player]] = None, k_factor: float = 32):
         self.name = str(name)
         # playerCount is optional metadata; keep it but prefer actual list length
         self.playerCount = int(playerCount)
         self.players: List[Player] = list(players) if players else []
+        self.elo = Elo(k_factor)
 
     def find_index(self, name: str) -> int:
         for i, p in enumerate(self.players):
@@ -135,13 +137,15 @@ class Leaderboard:
             raise KeyError(f"loser '{loser}' not found")
         w.record_win(1)
         l.record_loss(1)
+        #update elo ratings of players
+        self.elo.update_ratings(w, l)
 
     def standings(self) -> List[Player]:
         """Return the players sorted by the ranking rules described above."""
         # sort by key tuple and reverse to have highest first
         return sorted(
             self.players,
-            key=lambda p: (p.win_rate, p.wins, -p.losses, p.name),
+            key=lambda p: (p.rating, p.win_rate, p.wins, -p.losses, p.name),
             reverse=True,
         )
 
