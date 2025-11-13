@@ -1,0 +1,9 @@
+{
+  "players": [
+    { "name": "alice", "winRecord": 10, "lossRecord": 2, "rating": 1580 },
+    { "name": "bob", "winRecord": 8, "lossRecord": 4, "rating": 1520 },
+    { "name": "carol", "winRecord": 5, "lossRecord": 1, "rating": 1550 },
+    { "name": "dave", "winRecord": 2, "lossRecord": 6, "rating": 1400 },
+    { "name": "eve", "winRecord": 0, "lossRecord": 0, "rating": 1500 }
+  ]
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Leaderboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Leaderboard</h1>
+    <p class="subtitle">A simple, static leaderboard viewer. Load a JSON export from your Python app or use the sample data.</p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <label class="file-label">
+        Upload leaderboard JSON
+        <input id="fileInput" type="file" accept="application/json" />
+      </label>
+      <button id="refreshBtn">Refresh (reload sample)</button>
+      <div id="status" class="status">Loading sample data...</div>
+    </section>
+
+    <section class="table-wrap">
+      <table id="leaderboard" aria-label="Leaderboard table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Rating</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Win rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- rows populated by script.js -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <small>Tip: to serve locally run <code>python -m http.server 8000</code> from this folder and open <a href="http://localhost:8000">http://localhost:8000</a>.</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
