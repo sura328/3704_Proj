@@ -26,3 +26,7 @@ class Elo:
         #update ratings
         winner.rating += self.k_factor * (1 - expected_win)
         loser.rating += self.k_factor * (0 - expected_lose)
+
+        #round the final rating to two decimal places for consistency
+        winner.rating = round(winner.rating, 2)
+        loser.rating = round(loser.rating, 2)
