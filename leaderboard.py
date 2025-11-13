@@ -32,7 +32,7 @@ class Player:
         self.name = str(name)
         self.winRecord = int(winRecord)
         self.lossRecord = int(lossRecord)
-        self.rating = float(rating) #elo rating
+        self.rating = float(rating) #elo rating (default 1500)
 
     def record_win(self, count: int = 1) -> None:
         """Add wins to this player's record."""
