@@ -4,3 +4,16 @@ The system has these components (so far):
 > Player - each individual player with wins, losses, and elo rating
 > Leaderboard - manages players, records match results, and generates rankings
 > Elo - handles all elo calculations and updates
+
+
+
+AI Statement:
+We utilized AI, specifically Copilot, to help develop our website application. This includes: 
+> index.html, README.md, sample_players.json, sample_season.json, script.js, and style.css
+
+We decided to use AI to assist us with this in order to give us an initial working prototype of our website application to ensure that our implementation is functioning correctly. We also used AI to assist due to a lack of experience with HTML, meaning we needed to utilize AI to help us operate the technical side of HTML. 
+
+The implementation of the website application utilizes index.html and style.css to give a visualization of our leaderboard. Our json files, sample_players and sample_season provide example data for our website application to use. Finally, script.js is how we combine all of our web files with our leaderboard and elo python files. 
+
+The website application works as expected, providing us a visual of the leaderboard in action with an accompanying data set. In the future, we'd want to improve the visuals of it to match our original vision and, when we feel more confident using HTML, we'd look to expand this initial implementation to work better with our python files as we expand upon their capabilities and the systems we'll be implementing going forwards.
+
