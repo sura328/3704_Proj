@@ -1,47 +1,75 @@
-Leaderboard web UI
+Leaderboard Web UI
 
-This small static site displays a leaderboard from a JSON export. It is intentionally lightweight so you can preview results locally or integrate it with a simple backend.
+This small web UI displays a leaderboard using your Python Leaderboard class and Elo calculations. The UI is served via Flask, so you can run the backend and frontend from a single server.
 
-Files created
-- index.html — the web page
-- style.css — styling for the page
-- script.js — loads JSON and renders the table
-- sample_players.json — sample data you can use immediately
+Files
 
-How to run locally (recommended)
-1. Open PowerShell and change directory to the `web` folder:
+templates/index.html — the web page
 
-   cd "c:\Users\hjpat\OneDrive\Desktop\CS 3704\3704_Proj\web"
+web/style.css — styling for the page
 
-2. Start a simple HTTP server (Python 3 must be installed):
+web/script.js — JavaScript that fetches leaderboard data and renders the table
 
-   python -m http.server 8000
+leaderboard.py — Python leaderboard class
 
-3. Open your browser and go to http://localhost:8000
+elo.py — Python Elo rating class
 
-Why serve via HTTP? Browsers block fetch() calls to local file:// URLs in many cases; serving the directory solves that.
+server.py — Flask backend serving the UI and API
 
-How to export your leaderboard from Python
+How to run locally
 
-If you want to use the actual `Leaderboard` in this repo, you can export it to JSON and place the file in this folder as `sample_players.json`. Example:
+Open a terminal and change directory to the project root (where server.py is located):
 
-```python
-# run from the repo root or ensure imports resolve
+cd "c:\Users\hjpat\OneDrive\Desktop\CS 3704\3704_Proj"
+
+
+Make sure Python 3 and Flask are installed. If not, install Flask:
+
+pip install flask flask-cors
+
+
+Run the Flask server:
+
+python server.py
+
+
+Open your browser and go to:
+
+http://127.0.0.1:5000/
+
+
+You should see the leaderboard UI. The page will fetch data from the backend automatically, and any changes made via the "Add Player" form will be reflected in the Python Leaderboard instance.
+
+How to add initial players
+
+You can prepopulate the leaderboard in server.py by editing the global leaderboard instance:
+
 from leaderboard import Leaderboard
+
+lb = Leaderboard("Main", k_factor=32)
+lb.add_player("alice", wins=10, losses=2)
+lb.add_player("bob", wins=8, losses=4)
+
+
+Or, if you prefer JSON:
+
 import json
+from leaderboard import Leaderboard
 
-lb = Leaderboard('Weekly')
-# add or load players as your app does
-lb.add_player('alice', wins=10, losses=2)
-lb.add_player('bob', wins=8, losses=4)
+lb = Leaderboard("Weekly")
+lb.add_player("alice", wins=10, losses=2)
+lb.add_player("bob", wins=8, losses=4)
 
-# write JSON compatible with the web UI
 with open('web/sample_players.json', 'w') as f:
     json.dump(lb.to_dict(), f, indent=2)
-```
 
-Notes and next steps
-- The UI accepts either a JSON object with a `players` array (the default `Leaderboard.to_dict()` shape) or a plain array of player objects.
-- Optional improvements: add pagination, server-side route that returns leaderboard JSON via Flask/Express, or a form to record matches live.
 
-If you'd like, I can add a tiny Python endpoint (Flask) to serve the leaderboard directly from your Python classes so the page can fetch fresh data. Tell me if you want that and I'll implement it.
+Then script.js can optionally load this JSON when the page first loads.
+
+Notes
+
+The Flask server serves the HTML from templates/ and static files from web/. No separate HTTP server is needed.
+
+All API requests (add/remove players, record matches) are handled by server.py.
+
+The leaderboard is sorted by Elo rating first, then win rate, total wins, fewer losses, and name.
