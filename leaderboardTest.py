@@ -171,3 +171,116 @@ class TestElo(unittest.TestCase):
 
         self.assertAlmostEqual(winner.rating, round(expected_new_winner_rating, 2))
         self.assertAlmostEqual(loser.rating, round(expected_new_loser_rating, 2))
+
+        class TestIntegrationPlayerLeaderboardElo(unittest.TestCase):
+    """Integration tests verifying Player, Leaderboard, and Elo working together."""
+
+    def setUp(self):
+        # Create leaderboard with known k-factor so calculations are predictable
+        self.lb = Leaderboard("IntegrationBoard", k_factor=32)
+
+        # Add players
+        self.alice = self.lb.add_player("alice")
+        self.bob = self.lb.add_player("bob")
+        self.charlie = self.lb.add_player("charlie")
+
+        # Store initial ratings for calculations
+        self.initial_ratings = {
+            "alice": self.alice.rating,
+            "bob": self.bob.rating,
+            "charlie": self.charlie.rating
+        }
+    
+    def test_full_match_flow(self):
+        """Test the integration of match recording, win/loss updates, and Elo adjustments."""
+
+        # alice beats bob
+        self.lb.record_match("alice", "bob")
+
+        # Ratings must have updated
+        self.assertNotEqual(self.alice.rating, self.initial_ratings["alice"])
+        self.assertNotEqual(self.bob.rating, self.initial_ratings["bob"])
+
+        # Win/Loss logic must also update
+        self.assertEqual(self.alice.wins, 1)
+        self.assertEqual(self.bob.losses, 1)
+
+        # Elo winner should go up, loser down
+        self.assertGreater(self.alice.rating, self.initial_ratings["alice"])
+        self.assertLess(self.bob.rating, self.initial_ratings["bob"])
+
+    def test_sequential_matches_affect_standings(self):
+        """Record several matches and ensure standings reflect win-rate and Elo properly."""
+
+        # alice beats bob twice
+        self.lb.record_match("alice", "bob")
+        self.lb.record_match("alice", "bob")
+
+        # charlie beats alice once
+        self.lb.record_match("charlie", "alice")
+
+        # Check win/loss totals
+        self.assertEqual(self.alice.wins, 2)
+        self.assertEqual(self.alice.losses, 1)
+
+        self.assertEqual(self.bob.losses, 2)
+        self.assertEqual(self.charlie.wins, 1)
+
+        # Get current standings
+        standings = self.lb.standings()
+
+        # Verify ordering: Charlie should likely outrank Bob (higher win rate)
+        self.assertIn(self.charlie, standings)
+        self.assertIn(self.alice, standings)
+        self.assertIn(self.bob, standings)
+
+        # Everyone must appear exactly once
+        self.assertEqual(len(standings), 3)
+
+        # Standings must be sorted by rating, then win-rate, then wins
+        # Check monotonic descending rating order
+        ratings = [p.rating for p in standings]
+        self.assertEqual(ratings, sorted(ratings, reverse=True))
+    
+    def test_top_n_integration(self):
+        """Verify that top_n reflects Elo + win/loss changes correctly."""
+
+        # charlie beats both alice and bob
+        self.lb.record_match("charlie", "alice")
+        self.lb.record_match("charlie", "bob")
+
+        # Now charlie should be at the top
+        top_1 = self.lb.top_n(1)
+        self.assertEqual(top_1[0].name, "charlie")
+
+        # top_n should never exceed number of players
+        top_10 = self.lb.top_n(10)
+        self.assertEqual(len(top_10), 3)
+    
+    def test_integration_serialization_roundtrip(self):
+        """Verify that saving + loading a leaderboard preserves state (wins, losses, ratings)."""
+
+        # Play matches
+        self.lb.record_match("alice", "charlie")
+        self.lb.record_match("bob", "alice")
+
+        # Serialize
+        data = self.lb.to_dict()
+
+        # Re-load from dictionary
+        lb2 = Leaderboard.from_dict(data)
+
+        # Ratings and records must match exactly
+        for name in ["alice", "bob", "charlie"]:
+            p1 = self.lb.get_player(name)
+            p2 = lb2.get_player(name)
+
+            self.assertEqual(p1.wins, p2.wins)
+            self.assertEqual(p1.losses, p2.losses)
+            self.assertEqual(p1.rating, p2.rating)
+
+        # Standings should be identical
+        self.assertEqual(
+            [p.name for p in self.lb.standings()],
+            [p.name for p in lb2.standings()]
+        )
