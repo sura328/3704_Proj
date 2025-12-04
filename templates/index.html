@@ -12,32 +12,24 @@ current state.
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Leaderboard</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
   <header>
     <h1>Leaderboard</h1>
-    <p class="subtitle">A simple, static leaderboard viewer. Load a JSON export from your Python app or use the sample data.</p>
+    <p class="subtitle">A simple leaderboard viewer. Add players and see Elo ratings update automatically.</p>
   </header>
 
   <main>
     <section class="controls">
-      <label class="file-label">
-        Upload leaderboard JSON
-        <input id="fileInput" type="file" accept="application/json" />
-      </label>
-      <button id="refreshBtn">Refresh (reload sample)</button>
-      <div class="add-player">
-
-      <!-- form to add new player to leaderboard -->
-      <h3>Add New Player</h3>
-      <input id="newName" type="text" placeholder="Name" />
-      <input id="newWins" type="number" placeholder="Wins" />
-      <input id="newLosses" type="number" placeholder="Losses" />
-      <button id="addPlayerBtn">Add Player</button>
+      <div class="form-group">
+        <input id="newName" type="text" placeholder="Player Name" />
+        <input id="newWins" type="number" placeholder="Wins" min="0" />
+        <input id="newLosses" type="number" placeholder="Losses" min="0" />
+        <button id="addPlayerBtn">Add Player</button>
       </div>
-
-      <div id="status" class="status">Loading sample data...</div>
+      <button id="refreshBtn">Refresh Leaderboard</button>
+      <div id="status" class="status"></div>
     </section>
 
     <section class="table-wrap">
@@ -60,9 +52,9 @@ current state.
   </main>
 
   <footer>
-    <small>Tip: to serve locally run <code>python -m http.server 8000</code> from this folder and open <a href="http://localhost:8000">http://localhost:8000</a>.</small>
+    <small>Leaderboard powered by Flask backend.</small>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
