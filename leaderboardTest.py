@@ -172,8 +172,8 @@ class TestElo(unittest.TestCase):
         self.assertAlmostEqual(winner.rating, round(expected_new_winner_rating, 2))
         self.assertAlmostEqual(loser.rating, round(expected_new_loser_rating, 2))
 
-        class TestIntegrationPlayerLeaderboardElo(unittest.TestCase):
-    """Integration tests verifying Player, Leaderboard, and Elo working together."""
+    class TestIntegrationPlayerLeaderboardElo(unittest.TestCase):
+        """Integration tests verifying Player, Leaderboard, and Elo working together."""
 
     def setUp(self):
         # Create leaderboard with known k-factor so calculations are predictable
