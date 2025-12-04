@@ -65,56 +65,7 @@ class TestLeaderboard(unittest.TestCase):
         self.assertEqual(p2.losses, 5)
         self.assertEqual(p2.rating, 1550.0)
 
-
-class TestElo(unittest.TestCase):
-    """Unit tests for the Elo class."""
-
-    def test_expected_score(self):
-        """Test the expected_score calculation."""
-        elo = Elo(k_factor=32)
-
-        # Equal ratings
-        score_equal = elo.expected_score(1500, 1500)
-        self.assertAlmostEqual(score_equal, 0.5)
-
-        # 400 points difference (higher rating A)
-        score_400_diff = elo.expected_score(1900, 1500)
-        self.assertAlmostEqual(score_400_diff, 1 / (1 + 10 ** (-1)), places=4) # Approx 0.9091
-
-        # 400 points difference (lower rating A)
-        score_neg_400_diff = elo.expected_score(1500, 1900)
-        self.assertAlmostEqual(score_neg_400_diff, 1 / (1 + 10 ** (1)), places=4) # Approx 0.0909
-
-    def test_update_ratings(self):
-        """Test updating ratings after a match."""
-        elo = Elo(k_factor=30)
-        winner = Player("W", rating=1600)
-        loser = Player("L", rating=1500)
-
-        initial_winner_rating = winner.rating
-        initial_loser_rating = loser.rating
-
-        expected_win = elo.expected_score(initial_winner_rating, initial_loser_rating)
-        expected_lose = elo.expected_score(initial_loser_rating, initial_winner_rating)
-
-        elo.update_ratings(winner, loser)
-
-        # Winner's rating should increase
-        self.assertTrue(winner.rating > initial_winner_rating)
-        # Loser's rating should decrease
-        self.assertTrue(loser.rating < initial_loser_rating)
-
-        # Check the new rating calculation based on the formula
-        expected_new_winner_rating = initial_winner_rating + elo.k_factor * (1 - expected_win)
-        expected_new_loser_rating = initial_loser_rating + elo.k_factor * (0 - expected_lose)
-
-        self.assertAlmostEqual(winner.rating, round(expected_new_winner_rating, 2))
-        self.assertAlmostEqual(loser.rating, round(expected_new_loser_rating, 2))
-
-
-class TestLeaderboard(unittest.TestCase):
-    """Unit tests for the Leaderboard class."""
-
+        """Additional Unit tests for the Leaderboard class."""
     def setUp(self):
         # Create a new leaderboard before each test
         self.lb = Leaderboard("TestBoard")
@@ -174,3 +125,49 @@ class TestLeaderboard(unittest.TestCase):
         with self.assertRaises(KeyError) as cm:
             self.lb.record_match(winner="charlie", loser="alice")
         self.assertIn("'charlie' not found", str(cm.exception))
+
+
+class TestElo(unittest.TestCase):
+    """Unit tests for the Elo class."""
+
+    def test_expected_score(self):
+        """Test the expected_score calculation."""
+        elo = Elo(k_factor=32)
+
+        # Equal ratings
+        score_equal = elo.expected_score(1500, 1500)
+        self.assertAlmostEqual(score_equal, 0.5)
+
+        # 400 points difference (higher rating A)
+        score_400_diff = elo.expected_score(1900, 1500)
+        self.assertAlmostEqual(score_400_diff, 1 / (1 + 10 ** (-1)), places=4) # Approx 0.9091
+
+        # 400 points difference (lower rating A)
+        score_neg_400_diff = elo.expected_score(1500, 1900)
+        self.assertAlmostEqual(score_neg_400_diff, 1 / (1 + 10 ** (1)), places=4) # Approx 0.0909
+
+    def test_update_ratings(self):
+        """Test updating ratings after a match."""
+        elo = Elo(k_factor=30)
+        winner = Player("W", rating=1600)
+        loser = Player("L", rating=1500)
+
+        initial_winner_rating = winner.rating
+        initial_loser_rating = loser.rating
+
+        expected_win = elo.expected_score(initial_winner_rating, initial_loser_rating)
+        expected_lose = elo.expected_score(initial_loser_rating, initial_winner_rating)
+
+        elo.update_ratings(winner, loser)
+
+        # Winner's rating should increase
+        self.assertTrue(winner.rating > initial_winner_rating)
+        # Loser's rating should decrease
+        self.assertTrue(loser.rating < initial_loser_rating)
+
+        # Check the new rating calculation based on the formula
+        expected_new_winner_rating = initial_winner_rating + elo.k_factor * (1 - expected_win)
+        expected_new_loser_rating = initial_loser_rating + elo.k_factor * (0 - expected_lose)
+
+        self.assertAlmostEqual(winner.rating, round(expected_new_winner_rating, 2))
+        self.assertAlmostEqual(loser.rating, round(expected_new_loser_rating, 2))
