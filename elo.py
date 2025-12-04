@@ -18,7 +18,7 @@ class Elo:
         return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
     
     #update ratings for winner and loser
-    def update_ratings(self, winner: Player, loser: Player) -> None:
+    def update_ratings(self, winner: "Player", loser: "Player") -> None:
         #calculate scores
         expected_win = self.expected_score(winner.rating, loser.rating)
         expected_lose = self.expected_score(loser.rating, winner.rating)
