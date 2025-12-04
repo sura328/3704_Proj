@@ -48,6 +48,6 @@ class Elo:
         
         # simulate losses
         for _ in range(losses):
-            elo.updating_ratings(opponent, player)
+            elo.update_ratings(opponent, player)
         
         return player.rating
