@@ -30,3 +30,24 @@ class Elo:
         #round the final rating to two decimal places for consistency
         winner.rating = round(winner.rating, 2)
         loser.rating = round(loser.rating, 2)
+            
+    def calculate_rating_from_record(wins: int, losses: int, k: float = 32) -> float:
+        """Simulate a player's Elo rating based on wins and losses against a baseline player"""
+        
+        elo = Elo(k_factor=k)
+
+        #temporary player with default starting rating of 1500
+        player = Player(name = "temp", winRecord = wins, lossRecord = losses, rating = 1500)
+        
+        #baseline opponent
+        opponent = Player(name = "baseline", rating = 1500)
+
+        # simulate wins
+        for _ in range(wins):
+            elo.update_ratings(player, opponent)
+        
+        # simulate losses
+        for _ in range(losses):
+            elo.updating_ratings(opponent, player)
+        
+        return player.rating
