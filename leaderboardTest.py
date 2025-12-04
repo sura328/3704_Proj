@@ -1,5 +1,4 @@
 import unittest
-import math
 from leaderboard import Player, Leaderboard
 from elo import Elo
 
