@@ -16,6 +16,8 @@ const tbody = document.querySelector('#leaderboard tbody');
 const fileInput = document.getElementById('fileInput');
 const refreshBtn = document.getElementById('refreshBtn');
 
+let currentPlayers = []; // store normalized players
+
 function setStatus(msg, isError = false) {
   statusEl.textContent = msg;
   statusEl.style.color = isError ? '#b91c1c' : '';
@@ -100,8 +102,8 @@ async function loadFromUrl(url = SAMPLE_URL) {
     const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch data: ' + res.statusText);
     const json = await res.json();
-    const players = normalizePlayers(json);
-    const sorted = sortPlayers(players);
+    currentPlayers = normalizePlayers(json);
+    const sorted = sortPlayers(currentPlayers);
     render(sorted);
     setStatus(`Loaded ${players.length} players (from ${url})`);
   } catch (err) {
@@ -115,8 +117,8 @@ function loadFromFile(file) {
   reader.onload = () => {
     try {
       const json = JSON.parse(reader.result);
-      const players = normalizePlayers(json);
-      render(sortPlayers(players));
+      currentPlayers = normalizePlayers(json);
+      render(sortPlayers(currentPlayers));
       setStatus(`Loaded ${players.length} players (from uploaded file)`);
     } catch (err) {
       console.error(err);
@@ -127,6 +129,39 @@ function loadFromFile(file) {
   reader.readAsText(file);
 }
 
+/* This function was made with the help of AI prompt used: create a javascript function
+ that takes inputs from html form and creates leaderboard entry */
+function addPlayer() {
+  const name = document.getElementById('newName').value.trim();
+  const wins = Number(document.getElementById('newWins').value);
+  const losses = Number(document.getElementById('newLosses').value);
+  const rating = Number(document.getElementById('newRating').value);
+
+  // all new players must have a name
+  if (!name) {
+    setStatus('Player must have a name.', true);
+    return;
+  }
+
+  // if nothing is entered for win loss record and rating, default values are added
+  const newPlayer = {
+    name,
+    winRecord: wins || 0,
+    lossRecord: losses || 0,
+    rating: rating || 1500
+  };
+
+  currentPlayers.push(newPlayer);
+  render(sortPlayers(currentPlayers));
+  setStatus(`Added player '${name}'`);
+
+  //clear inputs
+  document.getElementById('newName').value = '';
+  document.getElementById('newWins').value = '';
+  document.getElementById('newLosses').value = '';
+  document.getElementById('newRating').value = '';
+}
+
 fileInput.addEventListener('change', (ev) => {
   const f = ev.target.files && ev.target.files[0];
   if (!f) return;
@@ -134,6 +169,8 @@ fileInput.addEventListener('change', (ev) => {
 });
 
 refreshBtn.addEventListener('click', () => loadFromUrl(SAMPLE_URL));
+
+document.getElementById('addPlayerBtn').addEventListener('click', addPlayer);
 
 // initial load
 loadFromUrl();
