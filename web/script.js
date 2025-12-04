@@ -131,11 +131,10 @@ function loadFromFile(file) {
 
 /* This function was made with the help of AI prompt used: create a javascript function
  that takes inputs from html form and creates leaderboard entry */
-function addPlayer() {
+async function addPlayer() {
   const name = document.getElementById('newName').value.trim();
   const wins = Number(document.getElementById('newWins').value);
   const losses = Number(document.getElementById('newLosses').value);
-  const rating = Number(document.getElementById('newRating').value);
 
   // all new players must have a name
   if (!name) {
@@ -143,17 +142,23 @@ function addPlayer() {
     return;
   }
 
-  // if nothing is entered for win loss record and rating, default values are added
-  const newPlayer = {
-    name,
-    winRecord: wins || 0,
-    lossRecord: losses || 0,
-    rating: rating || 1500
-  };
+  try {
+    const res = await fetch("http://localhost:5000/add_player", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, wins, losses })
+    });
 
-  currentPlayers.push(newPlayer);
-  render(sortPlayers(currentPlayers));
-  setStatus(`Added player '${name}'`);
+    const newPlayer = await res.json();
+
+    // add to local list and render
+    currentPlayers.push(newPlayer);
+    render(sortPlayers(currentPlayers));
+    setStatus(`Added player '${newPlayer.name}' with rating ${newPlayer.rating.toFixed(0)}`);
+  } catch (err) {
+    console.error(err);
+    setStatus('Failed to add player: ' + err.message, true);
+  }
 
   //clear inputs
   document.getElementById('newName').value = '';
