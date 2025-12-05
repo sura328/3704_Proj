@@ -146,5 +146,46 @@ async function updatePlayer() {
 // --- New Event Listener (at the end of script.js) ---
 document.getElementById('updatePlayerBtn').addEventListener('click', updatePlayer);
 
+// --- Remove Player Function ---
+async function removePlayer() {
+    const name = document.getElementById('removeName').value.trim();
+
+    if (!name) {
+        setStatus('Player name required for removal.', true);
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to remove '${name}' from the leaderboard?`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch("/remove_player", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name })
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || `Server returned status ${res.status}`);
+        }
+
+        // Refresh the leaderboard to reflect the removal
+        await fetchPlayers();
+        
+        setStatus(`Successfully removed '${name}' from the leaderboard.`);
+    } catch (err) {
+        console.error(err);
+        setStatus('Failed to remove player: ' + err.message, true);
+    }
+
+    // Clear input
+    document.getElementById('removeName').value = '';
+}
+
+// --- Event Listener for Remove Player ---
+document.getElementById('removePlayerBtn').addEventListener('click', removePlayer);
+
 // initial load
 fetchPlayers();
