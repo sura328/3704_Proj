@@ -42,6 +42,12 @@ class Player:
         """Add losses to this player's record."""
         self.lossRecord += int(count)
 
+    def update_records(self, wins: int, losses: int, rating: float) -> None:
+        """Update a player's win/loss records and Elo rating."""
+        self.winRecord = int(wins)
+        self.lossRecord = int(losses)
+        self.rating = float(rating)
+
     @property
     def wins(self) -> int:
         """Get total wins of this player."""

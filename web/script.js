@@ -101,5 +101,50 @@ async function addPlayer() {
 refreshBtn.addEventListener('click', fetchPlayers);
 document.getElementById('addPlayerBtn').addEventListener('click', addPlayer);
 
+// In script.js
+
+// --- New Function ---
+async function updatePlayer() {
+    const name = document.getElementById('updateName').value.trim();
+    const wins = Number(document.getElementById('updateWins').value || 0);
+    const losses = Number(document.getElementById('updateLosses').value || 0);
+
+    if (!name) {
+        setStatus('Player name required for update.', true);
+        return;
+    }
+
+    try {
+        const res = await fetch("/update_player", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, wins, losses })
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || `Server returned status ${res.status}`);
+        }
+
+        const updatedPlayer = await res.json();
+        
+        // Refresh the entire list to show the new standings/rating
+        await fetchPlayers(); 
+        
+        setStatus(`Updated records for '${updatedPlayer.name}'. New rating: ${updatedPlayer.rating.toFixed(0)}`);
+    } catch (err) {
+        console.error(err);
+        setStatus('Failed to update player: ' + err.message, true);
+    }
+
+    // Clear inputs
+    document.getElementById('updateName').value = '';
+    document.getElementById('updateWins').value = '';
+    document.getElementById('updateLosses').value = '';
+}
+
+// --- New Event Listener (at the end of script.js) ---
+document.getElementById('updatePlayerBtn').addEventListener('click', updatePlayer);
+
 // initial load
 fetchPlayers();

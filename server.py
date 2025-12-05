@@ -77,6 +77,35 @@ def get_player(name):
         return jsonify({"error": "Player not found"}), 404
     return jsonify(p.to_dict())
 
+@app.route("/update_player", methods=["POST"])
+def update_player():
+    data = request.json
+    name = data.get("name")
+    wins = int(data.get("wins", 0))
+    losses = int(data.get("losses", 0))
+
+    p = lb.get_player(name)
+    if p is None:
+        return jsonify({"error": f"Player '{name}' not found"}), 404
+
+    # 1. Update the player's win/loss records
+    # Reset rating to default (1500) before recalculation
+    p.update_records(wins, losses, 1500.0) 
+
+    # 2. Recalculate Elo based on the new W/L record against a baseline
+    elo_calc = Elo(lb.elo.k_factor)
+    opponent = Player("baseline", rating=1500)
+
+    for _ in range(wins):
+        elo_calc.update_ratings(p, opponent)
+    for _ in range(losses):
+        elo_calc.update_ratings(opponent, p)
+
+    # 3. Save the updated state to file
+    # This assumes you implemented the save_leaderboard function from the previous suggestion
+    # save_leaderboard(lb) 
+
+    return jsonify(p.to_dict())
 
 # --------------------------------------------
 # RUN SERVER

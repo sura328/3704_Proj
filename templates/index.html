@@ -22,31 +22,38 @@ current state.
 
   <main>
     <section class="controls">
-      <div class="form-group">
-        <input id="newName" type="text" placeholder="Player Name" />
-        <input id="newWins" type="number" placeholder="Wins" min="0" />
-        <input id="newLosses" type="number" placeholder="Losses" min="0" />
+      <h3>➕ Add New Player</h3> <div class="form-group">
+        <input id="newName" type="text" placeholder="Player Name" required/>
+        <input id="newWins" type="number" placeholder="Wins (e.g. 5)" value="0" min="0" />
+        <input id="newLosses" type="number" placeholder="Losses (e.g. 3)" value="0" min="0" />
         <button id="addPlayerBtn">Add Player</button>
       </div>
+
+    <hr style="border: 0; height: 1px; background: #ccc; margin: 15px 0;"> <h3>✏️ Update Player Records</h3>       <div class="form-group">
+        <input id="updateName" type="text" placeholder="Player Name to Update" required/>
+        <input id="updateWins" type="number" placeholder="New Total Wins" value="0" min="0">
+        <input id="updateLosses" type="number" placeholder="New Total Losses" value="0" min="0">
+        <button id="updatePlayerBtn">Update Records</button>
+      </div>
+      
       <button id="refreshBtn">Refresh Leaderboard</button>
       <div id="status" class="status"></div>
-    </section>
+      </section>
 
     <section class="table-wrap">
       <table id="leaderboard" aria-label="Leaderboard table">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Rating</th>
-            <th>Wins</th>
-            <th>Losses</th>
-            <th>Win rate</th>
-          </tr>
+      <thead>
+      <tr>
+      <th>Rank</th>
+      <th>Name</th>
+      <th>Rating</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Win rate</th>
+        </tr>
         </thead>
         <tbody>
-          <!-- rows populated by script.js -->
-        </tbody>
+                  </tbody>
       </table>
     </section>
   </main>
