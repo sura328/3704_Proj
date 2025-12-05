@@ -21,6 +21,14 @@ current state.
   </header>
 
   <main>
+    <section class="controls">
+      <h3>➕ Add New Player</h3> <div class="form-group">
+        <input id="newName" type="text" placeholder="Player Name" required/>
+        <input id="newWins" type="number" placeholder="Wins (e.g. 5)" value="0" min="0" />
+        <input id="newLosses" type="number" placeholder="Losses (e.g. 3)" value="0" min="0" />
+        <button id="addPlayerBtn">Add Player</button>
+      </div>
+
     <hr style="border: 0; height: 1px; background: #ccc; margin: 15px 0;"> <h3>✏️ Update Player Records</h3>       <div class="form-group">
         <input id="updateName" type="text" placeholder="Player Name to Update" required/>
         <input id="updateWins" type="number" placeholder="New Total Wins" value="0" min="0">
