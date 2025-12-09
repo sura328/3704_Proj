@@ -18,16 +18,12 @@ Sura:
   AI usage:
   - This PR was AI-assisted. Copilot helped generate backend and frontend code, which was then manually tested and refactored to the project requirements.
 
-Comments:
 
 Henry:
 
-Comments:
 
 David:
 
-Comments:
 
 Nyssa:
 
-Comments:
