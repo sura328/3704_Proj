@@ -26,10 +26,6 @@ def index():
 # --------------------------------------------
 # API ROUTES
 # --------------------------------------------
-@app.route("/seasons")
-def seasons():
-    return render_template("seasons.html")
-    
 @app.route("/players", methods=["GET"])
 def get_players():
     return jsonify([p.to_dict() for p in lb.standings()])
